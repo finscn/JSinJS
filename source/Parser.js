@@ -1,4 +1,5 @@
-﻿function Parser()
+﻿
+function Parser()
 {
     this.lexicalParser = new LexicalParser();
     this.syntacticalParser = new SyntacticalParser();
