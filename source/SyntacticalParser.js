@@ -1,4 +1,4 @@
-﻿var rules = 
+var rules = 
 {
     "IdentifierName":[["Identifier"], ["break"], ["do"], ["instanceof"], ["typeof"], ["case"], ["else"], ["new"], ["var"], ["catch"], ["finally"], ["return"], ["void"], ["continue"], ["for"], ["switch"], ["while"], ["debugger"], ["function"], ["this"], ["with"], ["default"], ["if"], ["throw"], ["delete"], ["in"], ["try"]], 
     "Literal":[["NullLiteral"], ["BooleanLiteral"], ["NumericLiteral"], ["StringLiteral"], ["RegularExpressionLiteral"]], 
@@ -54,7 +54,7 @@
     "Initialiser":[["=", "AssignmentExpression"]], 
     "InitialiserNoIn":[["=", "AssignmentExpressionNoIn"]], 
     "EmptyStatement":[[";"]], 
-    "ExpressionStatement":[["Expression", "[lookahead∉{{,function}]", ";"]], 
+    "ExpressionStatement":[["Expression", "[lookaheadno{{,function}]", ";"]], 
     "IfStatement":[["if", "(", "Expression", ")", "Statement", "else", "Statement"], ["if", "(", "Expression", ")", "Statement"]], 
     "IterationStatement":[["do", "Statement", "while", "(", "Expression", ")", ";"], ["while", "(", "Expression", ")", "Statement"], ["for", "(", "ExpressionNoIn", ";", "Expression", ";", "Expression", ")", "Statement"], ["for", "(", ";", "Expression", ";", "Expression", ")", "Statement"], ["for", "(", "ExpressionNoIn", ";", ";", "Expression", ")", "Statement"], ["for", "(", ";", ";", "Expression", ")", "Statement"], ["for", "(", "ExpressionNoIn", ";", "Expression", ";", ")", "Statement"], ["for", "(", ";", "Expression", ";", ")", "Statement"], ["for", "(", "ExpressionNoIn", ";", ";", ")", "Statement"], ["for", "(", ";", ";", ")", "Statement"], ["for", "(", "var", "VariableDeclarationListNoIn", ";", "Expression", ";", "Expression", ")", "Statement"], ["for", "(", "var", "VariableDeclarationListNoIn", ";", ";", "Expression", ")", "Statement"], ["for", "(", "var", "VariableDeclarationListNoIn", ";", "Expression", ";", ")", "Statement"], ["for", "(", "var", "VariableDeclarationListNoIn", ";", ";", ")", "Statement"], ["for", "(", "LeftHandSideExpression", "in", "Expression", ")", "Statement"], ["for", "(", "var", "VariableDeclarationNoIn", "in", "Expression", ")", "Statement"]], 
     "ContinueStatement":[["continue", ";"], ["continue", "[noLineTerminator]", "Identifier", ";"]], 
@@ -77,27 +77,34 @@
     "FormalParameterList":[["Identifier"], ["FormalParameterList", ",", "Identifier"]], 
     "FunctionBody":[["SourceElements"], [""]], 
     "Program":[["SourceElements"], [""]], 
-    "SourceElements":[["SourceElement"], ["SourceElements", "SourceElement"]], "SourceElement":[["Statement"], ["FunctionDeclaration"]]
+    "SourceElements":[["SourceElement"], ["SourceElements", "SourceElement"]], 
+    "SourceElement":[["Statement"], ["FunctionDeclaration"]]
     
 };
-function Symbol(symbolName, token)
-{
+
+function Symbol(symbolName, token){
     this.name = symbolName;
     this.token = token;
     this.childNodes = [];
-    this. toString  = 
-        function(indent)
-        {
-            if(!indent)
-                indent = "";
-            if(this.childNodes.length == 1)
-                return this.childNodes[0]. toString (indent);
-            var str = indent + this.name + (this.token != undefined && this.name != this.token ? ":" + this.token:"") + "\n";
-            for(var i = 0;i < this.childNodes.length;i++)
-                str += this.childNodes[i]. toString (indent + "    ");
-            return str;
-        };
+
 }
+
+Symbol.prototype.addChild=function(child){
+    this.childNodes.push(child);
+    child.parentNode=this;
+}
+
+Symbol.prototype.toString=function(indent){
+    indent = indent||"";
+    if(this.childNodes.length == 1)
+        return this.childNodes[0]. toString (indent);
+    var str = indent + this.name + (this.token != undefined && this.name != this.token ? ":" + this.token:"") + "\n";
+    for(var i = 0;i < this.childNodes.length;i++)
+        str += this.childNodes[i]. toString (indent + "    ");
+    return str;
+};
+
+
 function SyntacticalParser()
 {
     var currentRule;
@@ -137,7 +144,7 @@ function SyntacticalParser()
                         {
                             if(symbol.match(/\[([^\]]+)\]/))
                             {
-                                if(RegExp.$1 == "lookahead∉{{,function}")
+                                if(RegExp.$1 == "lookaheadno{{,function}")
                                 {
                                     rulenode["$lookahead"] = ["{", "function"];
                                 }
@@ -189,7 +196,7 @@ function SyntacticalParser()
                 var count = current["$count"];
                 var newsymbol = new Symbol(current["$reduce"]);
                 while(count--)
-                    newsymbol.childNodes.push(symbolStack.pop()), statusStack.pop();
+                    newsymbol.addChild(symbolStack.pop()), statusStack.pop();
                 current = statusStack[statusStack.length - 1];
                 this.insertSymbol(newsymbol);
             }
@@ -227,7 +234,7 @@ function SyntacticalParser()
                     var count = current["$count"];
                     var newsymbol = new Symbol(current["$reduce"]);
                     while(count--)
-                        newsymbol.childNodes.push(symbolStack.pop()), statusStack.pop();
+                        newsymbol.addChild(symbolStack.pop()), statusStack.pop();
                     current = statusStack[statusStack.length - 1];
                     this.insertSymbol(newsymbol);
                 }
