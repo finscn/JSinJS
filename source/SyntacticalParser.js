@@ -1,4 +1,5 @@
-var rules = 
+
+JIJ.CONST.rules = 
 {
     "IdentifierName":[["Identifier"], ["break"], ["do"], ["instanceof"], ["typeof"], ["case"], ["else"], ["new"], ["var"], ["catch"], ["finally"], ["return"], ["void"], ["continue"], ["for"], ["switch"], ["while"], ["debugger"], ["function"], ["this"], ["with"], ["default"], ["if"], ["throw"], ["delete"], ["in"], ["try"]], 
     "Literal":[["NullLiteral"], ["BooleanLiteral"], ["NumericLiteral"], ["StringLiteral"], ["RegularExpressionLiteral"]], 
@@ -124,9 +125,9 @@ function SyntacticalParser()
         while(queue.length)
         {
             var symbolName = queue.shift();
-            if(!rules[symbolName])
+            if(!JIJ.CONST.rules[symbolName])
                 continue;
-            rules[symbolName].forEach(
+            JIJ.CONST.rules[symbolName].forEach(
                 function(rule)
                 {
                     if(node[symbolName].$lookahead && node[symbolName].$lookahead.some(
