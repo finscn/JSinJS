@@ -24,7 +24,7 @@ function Parser()
                     onInputElement(token);
                 try
                 {
-                    if((token.Comment && token.Comment.match(JIJ.CONST.lex.LineTerminator)) || token.LineTerminator)
+                    if((token.Comment && token.Comment.match(/[\n\r\u2028\u2029]/)) || token.LineTerminator)
                     {
                         haveLineTerminator = true;
                         continue;

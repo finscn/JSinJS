@@ -1,7 +1,5 @@
-﻿var JIJ={};
-var JIJ.CONST={};
-
-JIJ.CONST.lex = 
+﻿
+var lex = 
 {
     InputElementDiv:"<WhiteSpace>|<LineTerminator>|<Comment>|<ReservedWord>|<Identifier>|<NumericLiteral>|<Punctuator>|<StringLiteral>|<DivPunctuator>", 
     InputElementRegExp:"<WhiteSpace>|<LineTerminator>|<Comment>|<ReservedWord>|<Identifier>|<NumericLiteral>|<Punctuator>|<RegularExpressionLiteral>|<StringLiteral>", 
@@ -68,8 +66,8 @@ function XRegExp(xregexps, rootname, flag)
 }
 function LexicalParser()
 {
-    var inputElementDiv = new XRegExp(JIJ.CONST.lex, "InputElementDiv", "g");
-    var inputElementRegExp = new XRegExp(JIJ.CONST.lex, "InputElementRegExp", "g");
+    var inputElementDiv = new XRegExp(lex, "InputElementDiv", "g");
+    var inputElementRegExp = new XRegExp(lex, "InputElementRegExp", "g");
     var source;
     Object.defineProperty(this, "source", 
     {

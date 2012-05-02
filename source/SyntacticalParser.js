@@ -1,5 +1,5 @@
-
-JIJ.CONST.rules = 
+﻿
+var rules = 
 {
     "IdentifierName":[["Identifier"], ["break"], ["do"], ["instanceof"], ["typeof"], ["case"], ["else"], ["new"], ["var"], ["catch"], ["finally"], ["return"], ["void"], ["continue"], ["for"], ["switch"], ["while"], ["debugger"], ["function"], ["this"], ["with"], ["default"], ["if"], ["throw"], ["delete"], ["in"], ["try"]], 
     "Literal":[["NullLiteral"], ["BooleanLiteral"], ["NumericLiteral"], ["StringLiteral"], ["RegularExpressionLiteral"]], 
@@ -78,25 +78,21 @@ JIJ.CONST.rules =
     "FormalParameterList":[["Identifier"], ["FormalParameterList", ",", "Identifier"]], 
     "FunctionBody":[["SourceElements"], [""]], 
     "Program":[["SourceElements"], [""]], 
-    "SourceElements":[["SourceElement"], ["SourceElements", "SourceElement"]], 
-    "SourceElement":[["Statement"], ["FunctionDeclaration"]]
+    "SourceElements":[["SourceElement"], ["SourceElements", "SourceElement"]], "SourceElement":[["Statement"], ["FunctionDeclaration"]]
     
 };
 
-function Symbol(symbolName, token){
+function Symbol(symbolName, token)
+{
     this.name = symbolName;
     this.token = token;
-    this.childNodes = [];
-
+    this.childNodes = [];        
 }
 
-Symbol.prototype.addChild=function(child){
-    this.childNodes.push(child);
-    child.parentNode=this;
-}
-
-Symbol.prototype.toString=function(indent){
-    indent = indent||"";
+Symbol.prototype.toString = function(indent)
+{
+    if(!indent)
+        indent = "";
     if(this.childNodes.length == 1)
         return this.childNodes[0]. toString (indent);
     var str = indent + this.name + (this.token != undefined && this.name != this.token ? ":" + this.token:"") + "\n";
@@ -104,7 +100,6 @@ Symbol.prototype.toString=function(indent){
         str += this.childNodes[i]. toString (indent + "    ");
     return str;
 };
-
 
 function SyntacticalParser()
 {
@@ -125,9 +120,9 @@ function SyntacticalParser()
         while(queue.length)
         {
             var symbolName = queue.shift();
-            if(!JIJ.CONST.rules[symbolName])
+            if(!rules[symbolName])
                 continue;
-            JIJ.CONST.rules[symbolName].forEach(
+            rules[symbolName].forEach(
                 function(rule)
                 {
                     if(node[symbolName].$lookahead && node[symbolName].$lookahead.some(
@@ -197,7 +192,7 @@ function SyntacticalParser()
                 var count = current["$count"];
                 var newsymbol = new Symbol(current["$reduce"]);
                 while(count--)
-                    newsymbol.addChild(symbolStack.pop()), statusStack.pop();
+                    newsymbol.childNodes.push(symbolStack.pop()), statusStack.pop();
                 current = statusStack[statusStack.length - 1];
                 this.insertSymbol(newsymbol);
             }
@@ -235,7 +230,7 @@ function SyntacticalParser()
                     var count = current["$count"];
                     var newsymbol = new Symbol(current["$reduce"]);
                     while(count--)
-                        newsymbol.addChild(symbolStack.pop()), statusStack.pop();
+                        newsymbol.childNodes.push(symbolStack.pop()), statusStack.pop();
                     current = statusStack[statusStack.length - 1];
                     this.insertSymbol(newsymbol);
                 }
